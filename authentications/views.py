@@ -7,12 +7,10 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 from rest_framework.response import Response
 from rest_framework.views import APIView
-import jwt
-import datetime
 
 class RegisterView(APIView):
     # register user
-    def post(self,request):
+    def post(self,request)-> Response:
         if not request.data['username'] or not request.data['password']:
             return Response({"message":"Username and password are required"}, status=status.HTTP_400_BAD_REQUEST)
             
