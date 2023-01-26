@@ -3,7 +3,7 @@ version: '3.8'
 services:
   
   crypto:
-    image: mohamadch91/endpoint_manager
+    image: mohamadch91/http_monitoring
     container_name: endpoint_manager
     ports:
       - 8000:8000

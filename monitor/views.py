@@ -3,7 +3,7 @@
 from .serializers import EndpointSerializer,RequestSerializer,EndpointRegisterSerializer
 
 from .models import Endpoint,Request
-from authen.models import User
+from django.contrib.auth.models import User
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated ,AllowAny
 from rest_framework.views import APIView
