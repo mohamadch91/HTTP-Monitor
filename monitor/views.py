@@ -108,7 +108,7 @@ class EndpointWarningView(generics.ListAPIView):
         id=self.kwargs['pk']
         endpoint=get_object_or_404(Endpoint,id=id)
         #check if the user is the owner of the endpoint
-        if(endpoint.user == request.user):
+        if(endpoint.user == user):
             #check if the endpoint fail limit is exceeded
             if (endpoint.fail_count>endpoint.fail_limit):
                 #get the requests that have status code greater or equal than 300

@@ -11,3 +11,4 @@ django_extensions
 tzdata
 pytz
 pyjwt
+django-q

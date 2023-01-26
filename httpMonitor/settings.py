@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'monitor',
     'authentications',
     'rest_framework',
+    'django_q'
     
 ]
 
