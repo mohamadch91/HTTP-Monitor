@@ -59,16 +59,19 @@ class UserEndpointView(generics.ListAPIView):
 
 class EndpointStatsView(generics.RetrieveAPIView):
     #Check for user authentication
-    permission_classes = (IsAuthenticated,)
     serializer_class = EndpointSerializer
     queryset=Endpoint.objects.all()
     def get(self, request, *args, **kwargs)-> Response:
+        user_id=get_user(self.request)
+        if user_id is None:
+            return Response({"message":"You are not authorized to view endpoints"}, status=status.HTTP_401_UNAUTHORIZED)
+        user=get_object_or_404(User,pk=user_id)
         #get endpoint id from url
         id=kwargs['pk']
         #get endpoint
         endpoint=get_object_or_404(Endpoint,id=id)
         #check if the user is the owner of the endpoint
-        if (endpoint.user==self.request.user):
+        if (endpoint.user==user):
             #get all requests for this endpoint in the last 24 hours
             yesterday=datetime.datetime.now()-datetime.timedelta(days=1)
             requests=Request.objects.filter(endpoint=endpoint,created_at__gte=yesterday)
@@ -91,102 +94,7 @@ class EndpointStatsView(generics.RetrieveAPIView):
             #if the user is not the owner of the endpoint
             response={"message":"You are not authorized to view this endpoint"}
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
-class CallEndpointView(APIView):
-    permission_classes = (AllowAny,)
-    #some junk method to call the endpoint
-    def get(self, request, *args, **kwargs):
-        endpoint=get_object_or_404(Endpoint,address=self.kwargs['endpoint'])
-        endpoint.success_count+=1
-        endpoint.save()
-        
-        data={
-            "endpoint":endpoint.id,
-            "status_code":200
-        }
-        serializer=RequestSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
-        return Response("Success", status=status.HTTP_200_OK)
-    def post(self, request, *args, **kwargs):
-        endpoint=get_object_or_404(Endpoint,address=self.kwargs['endpoint'])
-        endpoint.fail_count+=1
-        endpoint.save()
-        data={
-            "endpoint":endpoint.id,
-            "status_code":400
-        }
-        serializer=RequestSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
-        return Response("Fail", status=status.HTTP_400_BAD_REQUEST)
-    def put(self, request, *args, **kwargs):
-        endpoint=get_object_or_404(Endpoint,address=self.kwargs['endpoint'])
-        endpoint.fail_count+=1
-        endpoint.save()
-        data={
-            "endpoint":endpoint.id,
-            "status_code":403
-        }
-        serializer=RequestSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
-        return Response("Fail", status=status.HTTP_403_FORBIDDEN)
-    def delete(self, request, *args, **kwargs):
-        endpoint=get_object_or_404(Endpoint,address=self.kwargs['endpoint'])
-        endpoint.fail_count+=1
-        endpoint.save()
-        data={
-            "endpoint":endpoint.id,
-            "status_code":406
-        }
-        serializer=RequestSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
-        return Response("Fail", status=status.HTTP_406_NOT_ACCEPTABLE)        
-    def patch(self, request, *args, **kwargs):
-        endpoint=get_object_or_404(Endpoint,address=self.kwargs['endpoint'])
-        endpoint.fail_count+=1
-        endpoint.save()
-        data={
-            "endpoint":endpoint.id,
-            "status_code":503
-        }
-        serializer=RequestSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
-        return Response("Fail", status=status.HTTP_503_SERVICE_UNAVAILABLE)       
-    def options(self, request, *args, **kwargs):
-        endpoint=get_object_or_404(Endpoint,address=self.kwargs['endpoint'])
-        endpoint.success_count+=1
-        endpoint.save()
-        data={
-            "endpoint":endpoint.id,
-            "status_code":202
-        }
-        serializer=RequestSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
-        return Response(["GET","OPTIONS"], status=status.HTTP_202_ACCEPTED)       
-         
-        
+   
 class EndpointWarningView(generics.ListAPIView):
     #check if user authenticated
     permission_classes = (IsAuthenticated,)
