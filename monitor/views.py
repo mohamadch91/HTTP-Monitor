@@ -14,7 +14,6 @@ import datetime
 import copy
 class EndpointCreateView(generics.CreateAPIView):
     #Check for user authentication
-    permission_classes = (IsAuthenticated,)
     serializer_class = EndpointSerializer   
     def post(self, request: Request, *args, **kwargs)-> Response:
         #get user from request
