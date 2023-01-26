@@ -20,13 +20,20 @@ def encode_user(user):
 
 
 
-
-
-
-
-def decode_kwt(token):
+def decode_jwt(token):
     try:
-        decoded_token = jwt.decode(token, verify=False)
+        decoded_token = jwt.decode(token, key=settings.SECRET_KEY, algorithms=['HS256'])
+        username=decoded_token['username']
+        expire=decoded_token['expire']
+        
+        if expire < datetime.datetime.now():
+            return None
+        else:
+            if (User.objects.filter(username=username).exists()):
+                return User.objects.get(username=username)
+            else :
+                return None
+        
         
     except jwt.exceptions.DecodeError:
         return None
