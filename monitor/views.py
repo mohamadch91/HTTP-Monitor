@@ -5,11 +5,11 @@ from .serializers import EndpointSerializer,RequestSerializer,EndpointRegisterSe
 from .models import Endpoint,Request
 from django.contrib.auth.models import User
 from rest_framework import generics
-from rest_framework.permissions import IsAuthenticated ,AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
+from .authenticate import get_user
 import datetime
 import copy
 class EndpointCreateView(generics.CreateAPIView):
@@ -17,8 +17,11 @@ class EndpointCreateView(generics.CreateAPIView):
     serializer_class = EndpointSerializer   
     def post(self, request: Request, *args, **kwargs)-> Response:
         #get user from request
-        user=get_object_or_404(User,pk=request.user.id)
-        user_Endpoint=user.endpoint_count
+        user_id=get_user(request)
+        if user_id is None:
+            return Response({"message":"You are not authorized to create an endpoint"}, status=status.HTTP_401_UNAUTHORIZED)
+        user=get_object_or_404(User,pk=user_id)
+        user_Endpoint=Endpoint.objects.filter(user=user).count()
         #check if user has reached the limit of 20 endpoints
         if user_Endpoint<20:
             request_data={
@@ -29,8 +32,6 @@ class EndpointCreateView(generics.CreateAPIView):
             #create endpoint
             serializer = EndpointRegisterSerializer(data=request_data)
             if serializer.is_valid():
-                user.endpoint_count+=1
-                user.save()
                 serializer.save()
                 response_data=copy.deepcopy(serializer.data)
                 del response_data['user']
@@ -47,11 +48,14 @@ class EndpointCreateView(generics.CreateAPIView):
 
 class UserEndpointView(generics.ListAPIView):
     #Check for user authentication
-    permission_classes = (IsAuthenticated,)
     serializer_class = EndpointSerializer
     def get_queryset(self)-> Response:
         #all endpoints of the user
-        return Endpoint.objects.filter(user=self.request.user)
+        user_id=get_user(self.request)
+        if user_id is None:
+            return Response({"message":"You are not authorized to view endpoints"}, status=status.HTTP_401_UNAUTHORIZED)
+        user=get_object_or_404(User,pk=user_id)
+        return Endpoint.objects.filter(user=user)
 
 class EndpointStatsView(generics.RetrieveAPIView):
     #Check for user authentication
