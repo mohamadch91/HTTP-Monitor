@@ -3,11 +3,11 @@
 
 
 from rest_framework import status
-from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
+from django.contrib.auth import authenticate, login, logout
+from .jwt import encode_user
 class RegisterView(APIView):
     # register user
     def post(self,request)-> Response:
@@ -24,9 +24,20 @@ class RegisterView(APIView):
         return Response({"message":"User created successfully"}, status=status.HTTP_201_CREATED)
     
 class LoginView(APIView):
-    pass
+    
+    # login user
+    def post(self,request)-> Response:
         
+        if not request.data['username'] or not request.data['password']:
+            return Response({"message":"Username and password are required"}, status=status.HTTP_400_BAD_REQUEST)
         
-
+        username=request.data['username']
+        password=request.data['password']        
+        user = authenticate(username=username, password=password)
+        if user is None:
+            return Response({"message":"Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
+        token = encode_user(user)
+        return Response({"access":token}, status=status.HTTP_200_OK)
+        
     
 
