@@ -6,7 +6,7 @@ def get_user(request):
         
         user=decode_jwt(token)
         if user:
-            return user.id
+            return user.pk
         else:
             return None
     else:

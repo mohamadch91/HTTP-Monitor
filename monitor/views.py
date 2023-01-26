@@ -62,7 +62,7 @@ class EndpointStatsView(generics.RetrieveAPIView):
     serializer_class = EndpointSerializer
     queryset=Endpoint.objects.all()
     def get(self, request, *args, **kwargs)-> Response:
-        user_id=get_user(self.request)
+        user_id=get_user(request)
         if user_id is None:
             return Response({"message":"You are not authorized to view endpoints"}, status=status.HTTP_401_UNAUTHORIZED)
         user=get_object_or_404(User,pk=user_id)
@@ -97,9 +97,13 @@ class EndpointStatsView(generics.RetrieveAPIView):
    
 class EndpointWarningView(generics.ListAPIView):
     #check if user authenticated
-    permission_classes = (IsAuthenticated,)
     queryset = Endpoint.objects.all()
     def get (self, request, *args, **kwargs)->Response:
+        user_id = get_user(request)
+        if user_id is None:
+            return Response({"message":"You are not authorized to view endpoints"}, status=status.HTTP_401_UNAUTHORIZED)
+        
+        user = get_object_or_404(User, pk=user_id)
         #get the endpoint id from the url
         id=self.kwargs['pk']
         endpoint=get_object_or_404(Endpoint,id=id)
