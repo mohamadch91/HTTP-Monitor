@@ -12,3 +12,4 @@ tzdata
 pytz
 pyjwt
 django-q
+requests
