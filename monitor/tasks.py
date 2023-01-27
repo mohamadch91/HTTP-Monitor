@@ -6,7 +6,11 @@ def check_urls():
     endpoints=Endpoint.objects.all()
     for endpoint in endpoints.iterator():
         try:
-            response=requests.get(endpoint.address)
+            url=endpoint.address
+            # check for http
+            if not url.startswith('http'):
+                url='http://'+url
+            response=requests.get(url)
             status_code=response.status_code
             if (status_code>=200 and status_code<300):
                 endpoint.success_count+=1

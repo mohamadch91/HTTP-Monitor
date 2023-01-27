@@ -28,8 +28,7 @@ def decode_jwt(token):
         decoded_token = jwt.decode(token, key=settings.SECRET_KEY, algorithms=['HS256'])
         username=decoded_token['username']
         expire=decoded_token['expire']
-        
-        if expire < datetime.datetime.now():
+        if expire < str(datetime.datetime.now()):
             return None
         else:
             if (User.objects.filter(username=username).exists()):
