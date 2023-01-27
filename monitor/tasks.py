@@ -14,8 +14,11 @@ def check_urls():
             status_code=response.status_code
             if (status_code>=200 and status_code<300):
                 endpoint.success_count+=1
+                endpoint.save()
+                
             else:
                 endpoint.fail_count+=1
+                endpoint.save()
             request=Request(endpoint=endpoint,status_code=status_code)
             request.save()
         except:
