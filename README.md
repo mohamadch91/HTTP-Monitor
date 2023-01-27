@@ -1,10 +1,10 @@
-# Endpoint manager
+# HTTP monitor
 
-This is a simple tool to manage endpoints in a RESTful API.
+This is a simple tool to monitor HTTP endpoints in a RESTful API.
 you can signup and login to get a token to access the API.
 also you can create, update, delete and list endpoints.
 
-- [Endpoint manager](#endpoint-manager)
+- [HTTP monitor](#http-monitor)
   - [Installation](#installation)
   - [Usage](#usage)
     - [Signup](#signup)
