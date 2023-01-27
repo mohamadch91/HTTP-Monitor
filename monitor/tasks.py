@@ -22,5 +22,7 @@ def check_urls():
             request=Request(endpoint=endpoint,status_code=status_code)
             request.save()
         except:
+            endpoint.fail_count+=1
+            endpoint.save()
             request=Request(endpoint=endpoint,status_code=500)
             request.save()

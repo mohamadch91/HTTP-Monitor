@@ -73,7 +73,7 @@ class EndpointStatsView(generics.RetrieveAPIView):
         #check if the user is the owner of the endpoint
         if (endpoint.user==user):
             #get all requests for this endpoint in the last 24 hours
-            yesterday=datetime.datetime.now()-datetime.timedelta(days=1)
+            yesterday=datetime.datetime.utcnow()-datetime.timedelta(days=1)
             requests=Request.objects.filter(endpoint=endpoint,created_at__gte=yesterday)
             #check if there are requests
             if (requests.count()>0):
