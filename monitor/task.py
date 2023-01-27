@@ -2,6 +2,7 @@ from .models import Endpoint,Request
 import requests
 
 def check_urls():
+    print("starting check_urls")
     endpoints=Endpoint.objects.all()
     for endpoint in endpoints.iterator():
         try:

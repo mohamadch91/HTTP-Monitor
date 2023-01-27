@@ -1,5 +1,8 @@
 import jwt
-import datetime
+from datetime import timedelta
+
+from django.db.models.functions import datetime
+
 from django.contrib.auth.models import User
 from django.conf import settings
 # generate jwt for user
@@ -10,7 +13,7 @@ def encode_user(user):
     
     jwt_token = jwt.encode({
         'username': username,
-        "expire": time_now + datetime.timedelta(days=1),
+        "expire": str(time_now + timedelta(days=1)),
     },  
     key=settings.SECRET_KEY
     , algorithm='HS256')
